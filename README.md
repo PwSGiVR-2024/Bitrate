@@ -1,6 +1,5 @@
-2D 0-bit action rougelike
-Features:
-- Make out individual pixels!
+2D 0-bit action rougelike featuring:
+- Crisp pixels!
 - At least 1 colour!
 - You can shoot things with a gun!
 - Pew pew pew pew pew, ssstranger
