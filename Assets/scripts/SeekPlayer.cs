@@ -7,6 +7,11 @@ public class SeekPlayer : MonoBehaviour
     public Transform player;
     public float speed = 5f;
 
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+    }
+
     void Update()
     {
         if (player != null)
