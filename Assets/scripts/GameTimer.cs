@@ -2,6 +2,7 @@ using TMPro.EditorUtilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameTimer : MonoBehaviour
 {
@@ -38,6 +39,6 @@ public class GameTimer : MonoBehaviour
     void TimerEnded()
     {
         // Implement what happens when the timer ends
-        Debug.Log("Timer has ended!");
+        SceneManager.LoadScene("VictoryScreen");
     }
 }

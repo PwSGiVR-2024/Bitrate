@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SeekPlayer : MonoBehaviour
 {
-    public Transform player;
     public float speed = 5f;
+    private Transform player;
 
     void Start()
     {
@@ -15,6 +13,8 @@ public class SeekPlayer : MonoBehaviour
     void Update()
     {
         if (player != null)
+        {
             transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+        }
     }
 }

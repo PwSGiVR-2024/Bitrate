@@ -3,40 +3,61 @@ using UnityEngine;
 public class PlayerShooting : MonoBehaviour
 {
     public GameObject projectilePrefab; // Reference to the projectile prefab
-    public Transform firePointRight; // Reference to the right fire point
-    public Transform firePointLeft; // Reference to the left fire point
+    public Transform firePoint; // Reference to the fire point
     public float projectileSpeed = 10f; // Speed of the projectile
+    public float rateOfFire = 0.5f; // Rate of fire in seconds
+    public AudioClip shootingSoundClip; // Reference to the shooting sound clip
+
+    private float nextFireTime = 0f;
+    private float currentDamage = 1f; // Initial damage
 
     void Update()
     {
-        // Check for input to shoot
-        if (Input.GetButtonDown("Fire1")) // Default is left mouse button or Ctrl
+        if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
         {
             Shoot();
+            nextFireTime = Time.time + rateOfFire;
         }
     }
 
     void Shoot()
     {
-        // Calculate direction towards the mouse position
-        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 playerPosition = transform.position;
-        Vector2 direction = (mousePosition - playerPosition).normalized;
+        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
 
-        // Determine which fire point to use based on the mouse position relative to the player
-        Transform chosenFirePoint = mousePosition.x > playerPosition.x ? firePointRight : firePointLeft;
-
-        // Instantiate the projectile at the chosen fire point
-        GameObject projectile = Instantiate(projectilePrefab, chosenFirePoint.position, Quaternion.identity);
-
-        // Get the Rigidbody2D component of the projectile
         Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
+        rb.velocity = -firePoint.right * projectileSpeed; // Reverse the direction to match the gun's facing
 
-        // Set the velocity of the projectile
-        rb.velocity = direction * projectileSpeed;
+        // Adjust the size of the projectile based on damage
+        float sizeMultiplier = Mathf.Sqrt(currentDamage);
+        projectile.transform.localScale *= sizeMultiplier;
 
-        // Rotate the projectile to face the direction
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        projectile.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+        // Set the damage of the projectile
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.damage = currentDamage;
+        }
+
+        // Play shooting sound effect
+        PlayShootingSound();
+    }
+
+    void PlayShootingSound()
+    {
+        // Create a new GameObject to hold the AudioSource
+        GameObject soundGameObject = new GameObject("ShootingSound");
+        AudioSource audioSource = soundGameObject.AddComponent<AudioSource>();
+
+        // Configure the AudioSource
+        audioSource.clip = shootingSoundClip;
+        audioSource.Play();
+
+        // Destroy the GameObject after the clip has finished playing
+        Destroy(soundGameObject, shootingSoundClip.length);
+    }
+
+    public void SetDamage(float newDamage)
+    {
+        currentDamage = newDamage;
     }
 }

@@ -1,18 +1,26 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerHealth : Health
 {
     public float invincibilityDuration = 2f;
     public float flickerInterval = 0.1f;
+    public Slider healthSlider;
     public UnityEvent onDamageTaken;
     public UnityEvent onPlayerDied;
+    public AudioClip damageSoundClip; // Reference to the damage sound effect
+    public AudioClip deathSoundClip; // Reference to the death sound effect
 
     private bool isInvincible = false;
     private SpriteRenderer playerRenderer;
     private Color originalColor;
     private PlayerMovement movementScript;
+    private PlayerShooting shootingScript;
+    private AudioSource audioSource;
+
 
     protected override void Start()
     {
@@ -20,6 +28,9 @@ public class PlayerHealth : Health
         playerRenderer = GetComponent<SpriteRenderer>();
         originalColor = playerRenderer.color;
         movementScript = GetComponent<PlayerMovement>();
+        shootingScript = GetComponent<PlayerShooting>();
+        audioSource = GetComponent<AudioSource>();
+        UpdateHealthUI();
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -37,7 +48,14 @@ public class PlayerHealth : Health
         if (isInvincible) return;
 
         currentHealth -= damage;
+        UpdateHealthUI();
         onDamageTaken.Invoke();
+
+        // Play damage sound effect
+        if (damageSoundClip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(damageSoundClip);
+        }
 
         if (currentHealth <= 0)
         {
@@ -50,11 +68,41 @@ public class PlayerHealth : Health
             StartCoroutine(ApplyKnockback(knockbackDirection));
         }
     }
-
+    void UpdateHealthUI()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
+    }
     protected override void OnZeroHealth()
     {
-        // Add additional player-specific behaviors here
-        Destroy(gameObject);
+        //Update health UI
+        UpdateHealthUI();
+
+        // Disable player controls
+        if (movementScript != null)
+        {
+            movementScript.enabled = false;
+        }
+
+        if (shootingScript != null)
+        {
+            shootingScript.enabled = false;
+        }
+
+        // Disable collider to prevent future collisions
+        col.enabled = false;
+
+        // Play death sound effect
+        if (deathSoundClip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(deathSoundClip);
+        }
+
+        // Start the death flicker coroutine
+        StartCoroutine(DeathFlickerCoroutine());
     }
 
     private IEnumerator InvincibilityCoroutine()
@@ -89,5 +137,27 @@ public class PlayerHealth : Health
         {
             movementScript.enabled = true;
         }
+    }
+
+    private IEnumerator DeathFlickerCoroutine()
+    {
+        float flickerDuration = 0.05f; // Starting flicker duration
+        float flickerIncrease = 0.05f; // Increase in flicker duration each cycle
+        float maxFlickerDuration = 0.5f; // Maximum flicker duration before the player becomes invisible
+
+        while (flickerDuration < maxFlickerDuration)
+        {
+            playerRenderer.color = Color.clear;
+            yield return new WaitForSeconds(flickerDuration);
+
+            playerRenderer.color = originalColor;
+            yield return new WaitForSeconds(flickerDuration);
+
+            flickerDuration += flickerIncrease;
+        }
+
+        playerRenderer.color = Color.clear;
+
+        SceneManager.LoadScene("GameOverScreen"); // Change to your Game Over scene
     }
 }

@@ -39,6 +39,7 @@ public class Health : MonoBehaviour
     {
         // Placeholder for additional behaviors upon destruction
         // Override this method in derived classes for specific behaviors
+
         Destroy(gameObject);
     }
 

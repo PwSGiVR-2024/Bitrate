@@ -3,7 +3,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public float lifetime = 2f;
-    public int damage = 1;
+    public float damage = 1f; // Initial damage
 
     void Start()
     {
@@ -12,11 +12,11 @@ public class Projectile : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Health health = collision.gameObject.GetComponent<Health>();
-        if (health != null)
+        BaseEnemy BaseEnemy = collision.gameObject.GetComponent<BaseEnemy>();
+        if (BaseEnemy != null)
         {
             Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
-            health.TakeDamage(damage, knockbackDirection);
+            BaseEnemy.TakeDamage((int)damage, knockbackDirection);
         }
 
         Destroy(gameObject);
