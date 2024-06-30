@@ -29,7 +29,7 @@ public class PlayerExperience : MonoBehaviour
     void LevelUp()
     {
         level++;
-        experiencePoints = experiencePoints - experienceToNextLevel;
+        experiencePoints = 0;
         experienceToNextLevel *= 2;
         UpdateUI();
     }

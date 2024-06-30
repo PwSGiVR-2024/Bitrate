@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11c2c33599ed77243bb7bb465a5bd7aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  experiencePoints: 5
+  experiencePoints: 1
   maxHealth: 3
   knockbackForce: 5
   damageCooldown: 0.2
