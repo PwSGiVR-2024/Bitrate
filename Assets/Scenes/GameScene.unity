@@ -4994,13 +4994,13 @@ MonoBehaviour:
     onApplyUpgrade:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 11500000, guid: 6a28e0cb12f3b754281adbe7081733f6, type: 3}
-          m_TargetAssemblyTypeName: 
-          m_MethodName: 
-          m_Mode: 0
+        - m_Target: {fileID: 11400000, guid: 011a265ed730f344387ab72f5ff2a6e7, type: 2}
+          m_TargetAssemblyTypeName: GenericStatUpgrade, Assembly-CSharp
+          m_MethodName: ApplyUpgrade
+          m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: 
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
