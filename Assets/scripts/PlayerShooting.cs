@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class PlayerShooting : MonoBehaviour
+public class PlayerShooting : MonoBehaviour, IUpgradeable
 {
-    public GameObject projectilePrefab; // Reference to the projectile prefab
-    public Transform firePoint; // Reference to the fire point
-    public float projectileSpeed = 10f; // Speed of the projectile
-    public float rateOfFire = 0.5f; // Rate of fire in seconds
-    public AudioClip shootingSoundClip; // Reference to the shooting sound clip
+    public GameObject projectilePrefab;
+    public Transform firePoint;
+    public float projectileSpeed = 10f;
+    public float rateOfFire = 0.5f;
+    public AudioClip shootingSoundClip;
 
     private float nextFireTime = 0f;
-    private float currentDamage = 1f; // Initial damage
+    private float currentDamage = 1f;
 
     void Update()
     {
@@ -23,41 +23,40 @@ public class PlayerShooting : MonoBehaviour
     void Shoot()
     {
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-
         Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
-        rb.velocity = -firePoint.right * projectileSpeed; // Reverse the direction to match the gun's facing
+        rb.velocity = -firePoint.right * projectileSpeed;
 
-        // Adjust the size of the projectile based on damage
         float sizeMultiplier = Mathf.Sqrt(currentDamage);
         projectile.transform.localScale *= sizeMultiplier;
 
-        // Set the damage of the projectile
         Projectile projectileScript = projectile.GetComponent<Projectile>();
         if (projectileScript != null)
         {
             projectileScript.damage = currentDamage;
         }
 
-        // Play shooting sound effect
         PlayShootingSound();
     }
 
     void PlayShootingSound()
     {
-        // Create a new GameObject to hold the AudioSource
         GameObject soundGameObject = new GameObject("ShootingSound");
         AudioSource audioSource = soundGameObject.AddComponent<AudioSource>();
-
-        // Configure the AudioSource
         audioSource.clip = shootingSoundClip;
         audioSource.Play();
-
-        // Destroy the GameObject after the clip has finished playing
         Destroy(soundGameObject, shootingSoundClip.length);
     }
 
     public void SetDamage(float newDamage)
     {
         currentDamage = newDamage;
+    }
+
+    public void ApplyUpgrade(string upgradeType, float value)
+    {
+        if (upgradeType == "RateOfFire")
+        {
+            rateOfFire *= value;
+        }
     }
 }

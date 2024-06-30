@@ -4,15 +4,15 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class PlayerHealth : Health
+public class PlayerHealth : Health, IUpgradeable
 {
     public float invincibilityDuration = 2f;
     public float flickerInterval = 0.1f;
     public Slider healthSlider;
     public UnityEvent onDamageTaken;
     public UnityEvent onPlayerDied;
-    public AudioClip damageSoundClip; // Reference to the damage sound effect
-    public AudioClip deathSoundClip; // Reference to the death sound effect
+    public AudioClip damageSoundClip;
+    public AudioClip deathSoundClip;
 
     private bool isInvincible = false;
     private SpriteRenderer playerRenderer;
@@ -20,7 +20,6 @@ public class PlayerHealth : Health
     private PlayerMovement movementScript;
     private PlayerShooting shootingScript;
     private AudioSource audioSource;
-
 
     protected override void Start()
     {
@@ -30,6 +29,22 @@ public class PlayerHealth : Health
         movementScript = GetComponent<PlayerMovement>();
         shootingScript = GetComponent<PlayerShooting>();
         audioSource = GetComponent<AudioSource>();
+        UpdateHealthUI();
+    }
+
+    public void ApplyUpgrade(string upgradeType, float value)
+    {
+        if (upgradeType == "Health")
+        {
+            maxHealth += (int)value;
+            currentHealth = maxHealth;
+            UpdateHealthUI();
+        }
+    }
+
+    public void RefillHealth()
+    {
+        currentHealth = maxHealth;
         UpdateHealthUI();
     }
 
@@ -51,7 +66,6 @@ public class PlayerHealth : Health
         UpdateHealthUI();
         onDamageTaken.Invoke();
 
-        // Play damage sound effect
         if (damageSoundClip != null && audioSource != null)
         {
             audioSource.PlayOneShot(damageSoundClip);
@@ -68,6 +82,7 @@ public class PlayerHealth : Health
             StartCoroutine(ApplyKnockback(knockbackDirection));
         }
     }
+
     void UpdateHealthUI()
     {
         if (healthSlider != null)
@@ -76,12 +91,10 @@ public class PlayerHealth : Health
             healthSlider.value = currentHealth;
         }
     }
+
     protected override void OnZeroHealth()
     {
-        //Update health UI
         UpdateHealthUI();
-
-        // Disable player controls
         if (movementScript != null)
         {
             movementScript.enabled = false;
@@ -92,16 +105,13 @@ public class PlayerHealth : Health
             shootingScript.enabled = false;
         }
 
-        // Disable collider to prevent future collisions
         col.enabled = false;
 
-        // Play death sound effect
         if (deathSoundClip != null && audioSource != null)
         {
             audioSource.PlayOneShot(deathSoundClip);
         }
 
-        // Start the death flicker coroutine
         StartCoroutine(DeathFlickerCoroutine());
     }
 
@@ -129,7 +139,7 @@ public class PlayerHealth : Health
         }
 
         rb.velocity = knockbackDirection * knockbackForce;
-        col.enabled = false; // Disable collider to prevent further collisions
+        col.enabled = false;
         yield return new WaitForSeconds(damageCooldown);
         col.enabled = true;
 
@@ -141,9 +151,9 @@ public class PlayerHealth : Health
 
     private IEnumerator DeathFlickerCoroutine()
     {
-        float flickerDuration = 0.05f; // Starting flicker duration
-        float flickerIncrease = 0.05f; // Increase in flicker duration each cycle
-        float maxFlickerDuration = 0.5f; // Maximum flicker duration before the player becomes invisible
+        float flickerDuration = 0.05f;
+        float flickerIncrease = 0.05f;
+        float maxFlickerDuration = 0.5f;
 
         while (flickerDuration < maxFlickerDuration)
         {
@@ -157,7 +167,6 @@ public class PlayerHealth : Health
         }
 
         playerRenderer.color = Color.clear;
-
-        SceneManager.LoadScene("GameOverScreen"); // Change to your Game Over scene
+        SceneManager.LoadScene("GameOverScreen");
     }
 }

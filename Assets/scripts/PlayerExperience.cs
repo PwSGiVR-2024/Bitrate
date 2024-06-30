@@ -8,11 +8,14 @@ public class PlayerExperience : MonoBehaviour
     public int experiencePoints = 0;
     public int experienceToNextLevel = 20;
 
-    public Slider experienceSlider; // UI Slider for experience bar
-    public TMP_Text levelText; // UI Text for displaying the current level
+    public Slider experienceSlider;
+    public TMP_Text levelText;
+    public UpgradeUI upgradeUI;
+    private PlayerHealth playerHealth;
 
     void Start()
     {
+        playerHealth = GetComponent<PlayerHealth>();
         UpdateUI();
     }
 
@@ -32,6 +35,8 @@ public class PlayerExperience : MonoBehaviour
         experiencePoints = 0;
         experienceToNextLevel *= 2;
         UpdateUI();
+        playerHealth.RefillHealth();
+        upgradeUI.ShowUpgradePanel();
     }
 
     void UpdateUI()

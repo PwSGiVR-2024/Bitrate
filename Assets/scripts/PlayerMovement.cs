@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IUpgradeable
 {
     public float moveSpeed = 5f;
     public Rigidbody2D rb;
@@ -8,17 +8,21 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Input
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
-
-        // Normalize the movement vector to ensure consistent speed in all directions
         movement.Normalize();
     }
 
     void FixedUpdate()
     {
-        // Movement
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+    }
+
+    public void ApplyUpgrade(string upgradeType, float value)
+    {
+        if (upgradeType == "Speed")
+        {
+            moveSpeed *= value;
+        }
     }
 }

@@ -26,7 +26,6 @@ public class EnemySpawner : MonoBehaviour
         while (true)
         {
             AdjustSpawnRate();
-            Debug.Log("Current spawn rate: " + currentSpawnRate);
             float enemiesToSpawn = currentSpawnRate;
 
             // Spawn the integer part of the enemies
@@ -56,7 +55,6 @@ public class EnemySpawner : MonoBehaviour
         float timeFraction = elapsedTime / gameTimer.totalTime;
         // Adjust spawn rate linearly from initialSpawnRate to spawnRateMultiplier
         currentSpawnRate = Mathf.Lerp(spawnRateMultiplier, initialSpawnRate, timeFraction);
-        Debug.Log("Current spawn Rate: " + currentSpawnRate);
     }
 
 
